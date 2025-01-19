@@ -10,32 +10,49 @@ namespace CsharpFinalProject.CUI;
 
 public class CarServiceAppUi
 {
-    private LoginRegisterMenu _loginRegisterMenu;
-    private UserService _userService;
+    private LoginRegisterMenu? _loginRegisterMenu;
+    private UserService? _userService;
 
-    public void DisplayMainMenu(){
+    public void DisplayMainMenu()
+    {
         _loginRegisterMenu = new LoginRegisterMenu();
         _userService = new UserService();
 
         bool flag = true;
-
-        while(flag){
+        
+        while(flag)
+        {
+            _loginRegisterMenu.WriteMenu();
+            MenuChoice choice = _loginRegisterMenu.GetMenuChoice();
             try
             {
-                _loginRegisterMenu.WriteMenu();
-                MenuChoice choice = _loginRegisterMenu.GetMenuChoice();
                 switch (choice.Id)
                 {
                     case 1:
                         Console.Write("Enter your username: ");
-                        string username = Console.ReadLine();
+                        string usernameLog = Console.ReadLine();
 
                         Console.Write("Enter your password: "); 
-                        string password = Console.ReadLine();
+                        string passwordLog = Console.ReadLine();
 
-                        Login_DTO login_DTO = new Login_DTO(username, password);
+                        Login_DTO login_DTO = new Login_DTO(usernameLog, passwordLog);
 
                         _userService.LoginUser(login_DTO);
+                        
+                        break;
+                    case 2:
+                        Console.Write("Enter your username: ");
+                        string usernameReg = Console.ReadLine();
+
+                        Console.Write("Enter your password: ");
+                        string passwordReg = Console.ReadLine();
+
+                        Console.Write("Confirm your password: ");
+                        string confirmPasswordReg = Console.ReadLine();
+
+                        Register_DTO register_DTO = new Register_DTO(usernameReg, passwordReg, confirmPasswordReg);
+
+                        _userService.RegisterUser(register_DTO);
                         
                         break;
                     case 3:
@@ -49,11 +66,13 @@ public class CarServiceAppUi
             }
             catch (Exception e)
             {
+                
                 Console.WriteLine(e.Message);
             }
         }
-        
+    }
 
-        
+    public void DisplayUserMenu(){
+        throw new NotImplementedException();
     }
 }

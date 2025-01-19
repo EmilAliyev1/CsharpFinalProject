@@ -10,25 +10,23 @@ using CsharpFinalProject.Interfaces;
 
 namespace CsharpFinalProject.Implementations;
 
-public class UserService : IUserInterface
+public class UserService : IUserService
 {
-    private List<User> _users { get; set; } = new();
+    private List<User> _users { get; set; } = new List<User>();
 
     public UserService(){
         var json = File.ReadAllText("./Data/Users.json");
 
         if (json.Length > 0)
-        {
             _users = JsonSerializer.Deserialize<List<User>>(json)!;
-        }
-        else{
-            throw new Exception("No users found");
-        }
     }
 
     public User LoginUser(Login_DTO login_DTO){
         if (!ValidateService.ValidateLogin(login_DTO))
             throw new Exception("Invalid login credentials");
+
+        if (_users.Count == 0)
+            throw new Exception("No users found");
 
         foreach (var user in _users)
         {
@@ -45,13 +43,13 @@ public class UserService : IUserInterface
     {
         if (!ValidateService.ValidateRegister(register_DTO))
             throw new Exception("Invalid registration credentials");
-
+        if (!ValidateService.ValidateRegisterConfirmPassword(register_DTO))
+            throw new Exception("The confirm password field does not match with the password!");
+            
         string json = File.ReadAllText("./Data/Users.json");
 
         if (json.Length > 0)
-        {
             _users = JsonSerializer.Deserialize<List<User>>(json)!;
-        }
 
         _users.Add(MapToUser(register_DTO));
 
