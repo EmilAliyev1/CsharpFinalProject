@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CsharpFinalProject.Data.DTO;
+using CsharpFinalProject.Data.DTO.User;
 using CsharpFinalProject.Data.Model;
 using CsharpFinalProject.Implementations;
 
@@ -50,7 +51,7 @@ public class CarServiceAppUi
                         Console.Write("Confirm your password: ");
                         string confirmPasswordReg = Console.ReadLine();
 
-                        Register_DTO register_DTO = new Register_DTO(usernameReg, passwordReg, confirmPasswordReg);
+                        RegisterDto register_DTO = new RegisterDto(usernameReg, passwordReg, confirmPasswordReg);
 
                         _userService.RegisterUser(register_DTO);
                         

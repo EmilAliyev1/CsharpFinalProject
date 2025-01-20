@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using CsharpFinalProject.Data.DTO;
+using CsharpFinalProject.Data.DTO.User;
 
 namespace CsharpFinalProject.Implementations;
 
@@ -18,18 +19,18 @@ public static class ValidateService
         return loginRegex.IsMatch(login_DTO.username) && passwordRegex.IsMatch(login_DTO.password);
     }
     
-    public static bool ValidateRegister(Register_DTO register_DTO)
+    public static bool ValidateRegister(RegisterDto register_DTO)
     {
-        return loginRegex.IsMatch(register_DTO.username) && passwordRegex.IsMatch(register_DTO.password);
+        return loginRegex.IsMatch(register_DTO.Username) && passwordRegex.IsMatch(register_DTO.Password);
     }
 
-    public static bool ValidateRegisterConfirmPassword(Register_DTO register_DTO)
+    public static bool ValidateRegisterConfirmPassword(RegisterDto register_DTO)
     {
-        return register_DTO.password == register_DTO.confirmPassword;
+        return register_DTO.Password == register_DTO.ConfirmPassword;
     }
 
-    public static bool ValidateShowroomName(Showroom_DTO showroom_DTO)
+    public static bool ValidateShowroomName(ShowroomDto showroom_DTO)
     {
-        return showroomRegex.IsMatch(showroom_DTO.name);
+        return showroomRegex.IsMatch(showroom_DTO.Name);
     }
 }

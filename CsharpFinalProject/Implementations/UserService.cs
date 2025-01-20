@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Text.Json;
 using CsharpFinalProject.Data.DTO;
+using CsharpFinalProject.Data.DTO.User;
 using CsharpFinalProject.Data.Model;
 using CsharpFinalProject.Interfaces;
 
@@ -39,7 +40,7 @@ public class UserService : IUserService
         throw new Exception("Invalid login credentials");
     }
 
-    public void RegisterUser(Register_DTO register_DTO)
+    public void RegisterUser(RegisterDto register_DTO)
     {
         if (!ValidateService.ValidateRegister(register_DTO))
             throw new Exception("Invalid registration credentials");
@@ -60,10 +61,10 @@ public class UserService : IUserService
         Console.WriteLine("User registered successfully");
     }
 
-    private User MapToUser(Register_DTO register_DTO) { 
+    private User MapToUser(RegisterDto register_DTO) { 
         return new User { 
-            Username = register_DTO.username, 
-            Password = register_DTO.password,
+            Username = register_DTO.Username, 
+            Password = register_DTO.Password,
             ShowroomId = Guid.NewGuid()
         }; 
     }

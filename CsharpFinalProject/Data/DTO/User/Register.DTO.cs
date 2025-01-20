@@ -1,7 +1,7 @@
-namespace CsharpFinalProject.Data.DTO;
+namespace CsharpFinalProject.Data.DTO.User;
 
-public record Register_DTO(
-    string username,
-    string password,
-    string confirmPassword
+public record RegisterDto(
+    string Username,
+    string Password,
+    string ConfirmPassword
 );
