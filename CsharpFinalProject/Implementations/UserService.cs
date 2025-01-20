@@ -22,8 +22,8 @@ public class UserService : IUserService
             _users = JsonSerializer.Deserialize<List<User>>(json)!;
     }
 
-    public User LoginUser(Login_DTO login_DTO){
-        if (!ValidateService.ValidateLogin(login_DTO))
+    public User LoginUser(Login_DTO loginDto){
+        if (!ValidateService.ValidateLogin(loginDto))
             throw new Exception("Invalid login credentials");
 
         if (_users.Count == 0)
@@ -31,7 +31,7 @@ public class UserService : IUserService
 
         foreach (var user in _users)
         {
-            if (user.Username == login_DTO.username && user.Password == login_DTO.password)
+            if (user.Username == loginDto.username && user.Password == loginDto.password)
             {
                 Console.WriteLine("User logged in successfully");
                 return user;
@@ -40,11 +40,11 @@ public class UserService : IUserService
         throw new Exception("Invalid login credentials");
     }
 
-    public void RegisterUser(RegisterDto register_DTO)
+    public void RegisterUser(RegisterDto registerDto)
     {
-        if (!ValidateService.ValidateRegister(register_DTO))
+        if (!ValidateService.ValidateRegister(registerDto))
             throw new Exception("Invalid registration credentials");
-        if (!ValidateService.ValidateRegisterConfirmPassword(register_DTO))
+        if (!ValidateService.ValidateRegisterConfirmPassword(registerDto))
             throw new Exception("The confirm password field does not match with the password!");
             
         string json = File.ReadAllText("./Data/Users.json");
@@ -52,7 +52,7 @@ public class UserService : IUserService
         if (json.Length > 0)
             _users = JsonSerializer.Deserialize<List<User>>(json)!;
 
-        _users.Add(MapToUser(register_DTO));
+        _users.Add(MapToUser(registerDto));
 
         var jsonString = JsonSerializer.Serialize(_users);
 
@@ -61,10 +61,10 @@ public class UserService : IUserService
         Console.WriteLine("User registered successfully");
     }
 
-    private User MapToUser(RegisterDto register_DTO) { 
+    private User MapToUser(RegisterDto registerDto) { 
         return new User { 
-            Username = register_DTO.Username, 
-            Password = register_DTO.Password,
+            Username = registerDto.Username, 
+            Password = registerDto.Password,
             ShowroomId = Guid.NewGuid()
         }; 
     }
