@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 using CsharpFinalProject.Data.DTO.Showroom;
 using CsharpFinalProject.Data.DTO.User;
 using CsharpFinalProject.Data.Model;
+using CsharpFinalProject.Interfaces;
 
 namespace CsharpFinalProject.Implementations;
 
-public class ShowroomService
+public class ShowroomService : IShowroomService
 {
     private List<Showroom> _showrooms { get; set; } = new List<Showroom>();
 
