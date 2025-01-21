@@ -6,6 +6,6 @@ namespace CsharpFinalProject.Interfaces;
 
 public interface IUserService
 {
-    User LoginUser(Login_DTO login_DTO);
+    User LoginUser(LoginDto login_DTO);
     void RegisterUser(RegisterDto register_DTO);
 }

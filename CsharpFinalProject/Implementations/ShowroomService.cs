@@ -1,8 +1,10 @@
+using System.Net.Mail;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using CsharpFinalProject.Data.DTO.Showroom;
 using CsharpFinalProject.Data.DTO.User;
 using CsharpFinalProject.Data.Model;
 
@@ -37,10 +39,34 @@ public class ShowroomService
         Console.WriteLine("Showroom created successfully");
     }
 
+    public void CreateCar(CarDto carDto, int index)
+    {
+        _showrooms[index].Cars.Add(MapToCar(carDto));
+    }
+
     private Showroom MapToShowroom(ShowroomDto showroomDto) { 
         return new Showroom { 
             Name = showroomDto.Name, 
-            CarCapacity = showroomDto.CarCapacity
+            CarCapacity = showroomDto.CarCapacity,
+            Cars = []
         }; 
+    }
+
+    private Car MapToCar(CarDto carDto){
+        return new Car {
+            Model = carDto.Model,
+            Make = carDto.Make,
+            Year = carDto.Year
+        };
+    }
+
+    public void WriteShowrooms(){
+        Console.WriteLine("----------------------------------------------------------");
+        for (int i = 0; i < _showrooms.Count; i++)
+        {
+            Console.WriteLine($"{i + 1} - {_showrooms[i]}");
+
+        }
+        Console.WriteLine("----------------------------------------------------------");
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace CsharpFinalProject.Data.DTO.User;
+﻿namespace CsharpFinalProject.Data.DTO.Showroom;
 
 public record ShowroomDto(
     string Name,

@@ -2,20 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CsharpFinalProject.Interfaces;
 
 namespace CsharpFinalProject.CUI;
 
-public class LoginRegisterMenu : IMenu
+public class Menu
 {
-    private List<MenuChoice> _menuChoices = new()
-    {
-        new() { Id = 1, Description = "Log In" },
-        new() { Id = 2, Description = "Create new Accaunt" },
-        new() { Id = 3, Description = "Exit the App" },
-    };
+    private List<MenuChoice> _menuChoices {get; set;} = [];
 
-    public MenuChoice GetMenuChoice()
+    private MenuChoice GetMenuChoice()
     {
         var choice = Console.ReadLine();
         if (int.TryParse(choice, out var result))
@@ -25,11 +19,21 @@ public class LoginRegisterMenu : IMenu
         return _menuChoices[_menuChoices.Count - 1];
     }
 
-    public void WriteMenu(){
+    private void WriteMenu()
+    {
         Console.WriteLine("Please choose an option:");
         foreach (var choice in _menuChoices)
         {
             Console.WriteLine($"{choice.Id}. {choice.Description}");
         }
+    }
+
+    public MenuChoice MenuOperate(List<MenuChoice> menuChoices){
+        _menuChoices = menuChoices;
+        
+        WriteMenu();
+        MenuChoice choice = GetMenuChoice();
+
+        return choice;
     }
 }

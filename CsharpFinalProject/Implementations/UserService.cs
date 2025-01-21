@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text.Json;
-using CsharpFinalProject.Data.DTO;
 using CsharpFinalProject.Data.DTO.User;
 using CsharpFinalProject.Data.Model;
 using CsharpFinalProject.Interfaces;
@@ -22,7 +21,7 @@ public class UserService : IUserService
             _users = JsonSerializer.Deserialize<List<User>>(json)!;
     }
 
-    public User LoginUser(Login_DTO loginDto){
+    public User LoginUser(LoginDto loginDto){
         if (!ValidateService.ValidateLogin(loginDto))
             throw new Exception("Invalid login credentials");
 

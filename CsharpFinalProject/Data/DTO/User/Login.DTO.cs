@@ -1,8 +1,8 @@
 using System.Security.Cryptography.X509Certificates;
 
-namespace CsharpFinalProject.Data.DTO;
+namespace CsharpFinalProject.Data.DTO.User;
 
-public record Login_DTO(
+public record LoginDto(
     string username,
     string password
 );

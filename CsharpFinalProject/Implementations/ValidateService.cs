@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using CsharpFinalProject.Data.DTO;
 using CsharpFinalProject.Data.DTO.User;
+using CsharpFinalProject.Data.DTO.Showroom;
 
 namespace CsharpFinalProject.Implementations;
 
@@ -14,7 +15,7 @@ public static class ValidateService
     private static Regex passwordRegex = new Regex(@"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%&_])[A-Za-z\d!@#$%&_]{8,16}$");
     private static Regex showroomRegex = new Regex(@"^\w[\w.\-#&\s]*$");
     
-    public static bool ValidateLogin(Login_DTO login_DTO)
+    public static bool ValidateLogin(LoginDto login_DTO)
     {
         return loginRegex.IsMatch(login_DTO.username) && passwordRegex.IsMatch(login_DTO.password);
     }
