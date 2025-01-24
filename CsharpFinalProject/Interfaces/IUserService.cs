@@ -1,5 +1,4 @@
-﻿using CsharpFinalProject.Data.DTO;
-using CsharpFinalProject.Data.DTO.User;
+﻿using CsharpFinalProject.Data.DTO.User;
 using CsharpFinalProject.Data.Model;
 
 namespace CsharpFinalProject.Interfaces;

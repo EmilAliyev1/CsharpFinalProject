@@ -1,11 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using CsharpFinalProject.Data.DTO;
 using CsharpFinalProject.Data.DTO.Showroom;
 using CsharpFinalProject.Data.DTO.User;
-using CsharpFinalProject.Data.Model;
 using CsharpFinalProject.Implementations;
 
 namespace CsharpFinalProject.CUI;
@@ -15,6 +9,7 @@ public class CarServiceAppUi
     private readonly UserService? _userService = new UserService();
     private readonly ShowroomService? _showroomService = new ShowroomService();
     private readonly Menu? _menu = new Menu();
+    private bool flag = true;
 
     private List<MenuChoice> _loginRegisterMenuChoices = new()
     {
@@ -26,16 +21,15 @@ public class CarServiceAppUi
     private List<MenuChoice> _showroomMenuChoices = new()
     {
         new() { Id = 1, Description = "Create new showroom" },
-        new() { Id = 2, Description = "Create car" },
-        new() { Id = 3, Description = "Sell car" },
-        new() { Id = 4, Description = "Car sales statistics" },
-        new() { Id = 5, Description = "Exit the App" },
+        new() { Id = 2, Description = "Switch the current showroom" },
+        new() { Id = 3, Description = "Create car" },
+        new() { Id = 4, Description = "Sell car" },
+        new() { Id = 5, Description = "Car sales statistics" },
+        new() { Id = 6, Description = "Exit the App" },
     };
 
     public void DisplayMainMenu()
     {
-        bool flag = true;
-        
         while(flag)
         {
             MenuChoice choice = _menu.MenuOperate(_loginRegisterMenuChoices);
@@ -50,9 +44,9 @@ public class CarServiceAppUi
                         Console.Write("Enter your password: "); 
                         string passwordLog = Console.ReadLine();
 
-                        LoginDto login_DTO = new LoginDto(usernameLog, passwordLog);
+                        LoginDto loginDto = new LoginDto(usernameLog, passwordLog);
 
-                        _userService.LoginUser(login_DTO);
+                        _userService.LoginUser(loginDto);
 
                         DisplayUserMenu();
                         
@@ -67,9 +61,9 @@ public class CarServiceAppUi
                         Console.Write("Confirm your password: ");
                         string confirmPasswordReg = Console.ReadLine();
 
-                        RegisterDto register_DTO = new RegisterDto(usernameReg, passwordReg, confirmPasswordReg);
+                        RegisterDto registerDto = new RegisterDto(usernameReg, passwordReg, confirmPasswordReg);
 
-                        _userService.RegisterUser(register_DTO);
+                        _userService.RegisterUser(registerDto);
 
                         DisplayUserMenu();
                         
@@ -93,8 +87,6 @@ public class CarServiceAppUi
 
     public void DisplayUserMenu()
     {
-        bool flag = true;
-
         while (flag)
         {
             MenuChoice choice = _menu.MenuOperate(_showroomMenuChoices);
@@ -111,6 +103,41 @@ public class CarServiceAppUi
 
                         ShowroomDto showroomDto = new ShowroomDto(showroomName, carCapacity);
                         _showroomService.CreateShowroom(showroomDto);
+                        break;
+                    case 2:
+                        _showroomService.WriteAllShowrooms();
+
+                        Console.WriteLine("Choose the showroom to switch with the current one");
+                        int.TryParse(Console.ReadLine(), out int showroomIndex);
+
+                        _showroomService.SetTheCurrentShowroomIndex(showroomIndex - 1);
+
+                        break;
+                    case 3:
+                        Console.Write("Enter the brand of the car: ");
+                        string make = Console.ReadLine();
+
+                        Console.Write("Enter the model of the car: ");
+                        string model = Console.ReadLine();
+
+                        Console.Write("Enter the date of the car (dd-MM-yyyy)");
+                        string date = Console.ReadLine();
+                        if (!DateTime.TryParse(date, out DateTime dateTime)){
+                            if(!ValidateService.ValidateCarDateTime(dateTime))
+                                throw new Exception("Invalid year input, the year of the car must be between 1950 and 2025");
+                            throw new Exception("Invalid date input");
+                        }
+
+                        CarDto carDto = new CarDto(make, model, dateTime);
+
+                        _showroomService.CreateCar(carDto);
+
+                        break;
+                    case 4:
+                        
+                    case 6:
+                        flag = false;
+                        Console.WriteLine("Goodbye");
                         break;
                     default:
                         break;

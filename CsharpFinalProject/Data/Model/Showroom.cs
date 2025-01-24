@@ -9,7 +9,8 @@ public class Showroom
     public Guid Id { get; set; } = Guid.NewGuid(); 
     public string Name { get; set; } 
     public List<Car> Cars { get; set; } 
+    public List<Sale> Sales { get; set; }
     public int CarCapacity { get; set; } // машин не может быть больше чем CarCapacity 
     public int CarCount => Cars.Count; // количество машин в салоне 
-    public int SalesCount { get; set; }
+    public int SalesCount => Sales.Count;
 }

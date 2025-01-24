@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using CsharpFinalProject.Data.DTO;
 using CsharpFinalProject.Data.DTO.User;
 using CsharpFinalProject.Data.DTO.Showroom;
 
@@ -33,5 +28,9 @@ public static class ValidateService
     public static bool ValidateShowroomName(ShowroomDto showroom_DTO)
     {
         return showroomRegex.IsMatch(showroom_DTO.Name);
+    }
+
+    public static bool ValidateCarDateTime(DateTime dateTime){
+        return dateTime.Year > 1950 && dateTime.Year < 2025;
     }
 }

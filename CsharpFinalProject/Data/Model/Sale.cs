@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace CsharpFinalProject.Data.Model;
 public class Sale
 {
@@ -11,4 +6,5 @@ public class Sale
     public Guid CarId { get; set; } // идентификатор машины которая была продана 
     public Guid UserId { get; set; } // идентификатор пользователя который продал машину 
     public DateTime SaleDate { get; set; } // дата продажи 
+    public double Price { get; set; }
 }

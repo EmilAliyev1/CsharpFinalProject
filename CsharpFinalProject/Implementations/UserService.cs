@@ -1,8 +1,3 @@
-using System.Reflection.Metadata;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Text.Json;
 using CsharpFinalProject.Data.DTO.User;
 using CsharpFinalProject.Data.Model;
@@ -36,7 +31,7 @@ public class UserService : IUserService
                 return user;
             }
         }
-        throw new Exception("Invalid login credentials");
+        throw new Exception("No users found with this username");
     }
 
     public void RegisterUser(RegisterDto registerDto)
@@ -60,11 +55,15 @@ public class UserService : IUserService
         Console.WriteLine("User registered successfully");
     }
 
+    public Guid GetUserIdByIndex(int index){
+        return _users[index].Id;
+    }
+
     private User MapToUser(RegisterDto registerDto) { 
         return new User { 
             Username = registerDto.Username, 
             Password = registerDto.Password,
-            ShowroomId = Guid.NewGuid()
+            ShowroomId = Guid.NewGuid(),
         }; 
     }
 }
