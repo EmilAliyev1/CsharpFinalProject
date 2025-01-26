@@ -8,8 +8,9 @@ public class CarServiceAppUi
 {
     private readonly UserService? _userService = new UserService();
     private readonly ShowroomService? _showroomService = new ShowroomService();
+    private readonly GetValueService? _getValueService = new GetValueService();
     private readonly Menu? _menu = new Menu();
-    private bool flag = true;
+    private bool running = true;
 
     private List<MenuChoice> _loginRegisterMenuChoices = new()
     {
@@ -23,26 +24,32 @@ public class CarServiceAppUi
         new() { Id = 1, Description = "Create new showroom" },
         new() { Id = 2, Description = "Switch the current showroom" },
         new() { Id = 3, Description = "Create car" },
-        new() { Id = 4, Description = "Sell car" },
-        new() { Id = 5, Description = "Car sales statistics" },
-        new() { Id = 6, Description = "Exit the App" },
+        new() { Id = 4, Description = "Edit car" },
+        new() { Id = 5, Description = "Delete car" },
+        new() { Id = 6, Description = "Sell car" },
+        new() { Id = 7, Description = "Car sales statistics" },
+        new() { Id = 8, Description = "Find car by model"},
+        new() { Id = 9, Description = "Show all the cars"},
+        new() { Id = 10, Description = "Exit the App" },
     };
+
+    
 
     public void DisplayMainMenu()
     {
-        while(flag)
+        while(running)
         {
-            MenuChoice choice = _menu.MenuOperate(_loginRegisterMenuChoices);
             try
             {
+                MenuChoice choice = _menu.MenuOperate(_loginRegisterMenuChoices);
                 switch (choice.Id)
                 {
                     case 1:
                         Console.Write("Enter your username: ");
-                        string usernameLog = Console.ReadLine();
+                        string usernameLog = _getValueService.GetStringInputValue();
 
                         Console.Write("Enter your password: "); 
-                        string passwordLog = Console.ReadLine();
+                        string passwordLog = _getValueService.GetStringInputValue();
 
                         LoginDto loginDto = new LoginDto(usernameLog, passwordLog);
 
@@ -53,13 +60,13 @@ public class CarServiceAppUi
                         break;
                     case 2:
                         Console.Write("Enter your username: ");
-                        string usernameReg = Console.ReadLine();
+                        string usernameReg = _getValueService.GetStringInputValue();
 
                         Console.Write("Enter your password: ");
-                        string passwordReg = Console.ReadLine();
+                        string passwordReg = _getValueService.GetStringInputValue();
 
                         Console.Write("Confirm your password: ");
-                        string confirmPasswordReg = Console.ReadLine();
+                        string confirmPasswordReg = _getValueService.GetStringInputValue();
 
                         RegisterDto registerDto = new RegisterDto(usernameReg, passwordReg, confirmPasswordReg);
 
@@ -69,11 +76,10 @@ public class CarServiceAppUi
                         
                         break;
                     case 3:
-                        flag = false;
+                        running = false;
                         Console.WriteLine("Goodbye");
                         break;
                     default:
-                        Console.WriteLine("Invalid choice");
                         break;
                 }
             }
@@ -87,19 +93,19 @@ public class CarServiceAppUi
 
     public void DisplayUserMenu()
     {
-        while (flag)
+        while (running)
         {
-            MenuChoice choice = _menu.MenuOperate(_showroomMenuChoices);
             try
             {
+                MenuChoice choice = _menu.MenuOperate(_showroomMenuChoices);
                 switch (choice.Id)
                 {
                     case 1:
                         Console.Write("Enter the name of the showroom: ");
-                        string showroomName = Console.ReadLine();
+                        string showroomName = _getValueService.GetStringInputValue();
 
                         Console.Write("Enter car capacity of the showroom: "); 
-                        int.TryParse(Console.ReadLine(), out int carCapacity);
+                        int carCapacity = _getValueService.GetIntInputValue();
 
                         ShowroomDto showroomDto = new ShowroomDto(showroomName, carCapacity);
                         _showroomService.CreateShowroom(showroomDto);
@@ -108,35 +114,114 @@ public class CarServiceAppUi
                         _showroomService.WriteAllShowrooms();
 
                         Console.WriteLine("Choose the showroom to switch with the current one");
-                        int.TryParse(Console.ReadLine(), out int showroomIndex);
+                        int showroomIndex = _getValueService.GetIntInputValue();
 
                         _showroomService.SetTheCurrentShowroomIndex(showroomIndex - 1);
 
                         break;
                     case 3:
                         Console.Write("Enter the brand of the car: ");
-                        string make = Console.ReadLine();
+                        string makeCreate = _getValueService.GetStringInputValue();
 
                         Console.Write("Enter the model of the car: ");
-                        string model = Console.ReadLine();
+                        string modelCreate = _getValueService.GetStringInputValue();
 
                         Console.Write("Enter the date of the car (dd-MM-yyyy)");
-                        string date = Console.ReadLine();
-                        if (!DateTime.TryParse(date, out DateTime dateTime)){
-                            if(!ValidateService.ValidateCarDateTime(dateTime))
-                                throw new Exception("Invalid year input, the year of the car must be between 1950 and 2025");
+                        string carDateCreate = _getValueService.GetStringInputValue();
+                        
+                        if (!DateTime.TryParseExact(carDateCreate, "dd-MM-yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime carDateTimeCreate))
                             throw new Exception("Invalid date input");
-                        }
+                        
+                        if(!ValidateService.ValidateCarDateTime(carDateTimeCreate))
+                            throw new Exception("Invalid date input (the year of the car must be between 1950 and 2024)");
 
-                        CarDto carDto = new CarDto(make, model, dateTime);
+                        CarDto carDtoCreate = new CarDto(makeCreate, modelCreate, carDateTimeCreate);
 
-                        _showroomService.CreateCar(carDto);
+                        _showroomService.CreateCar(carDtoCreate);
 
                         break;
                     case 4:
+                        _showroomService.WriteAllCars();
+
+                        Console.Write("Choose the index of the car that you want to Edit: ");
+                        int carIndexEdit = _getValueService.GetIntInputValue();
                         
+
+                        Console.Write("Enter the brand of the car: ");
+                        string makeEdit = _getValueService.GetStringInputValue();
+
+                        Console.Write("Enter the model of the car: ");
+                        string modelEdit = _getValueService.GetStringInputValue();
+
+                        Console.Write("Enter the date of the car (dd-MM-yyyy)");
+                        string? carDateEdit = Console.ReadLine();
+                        
+                        if (!DateTime.TryParseExact(carDateEdit, "dd-MM-yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime carDateTimeEdit))
+                            throw new Exception("Invalid date input");
+                        
+                        if(!ValidateService.ValidateCarDateTime(carDateTimeEdit))
+                            throw new Exception("Invalid year input, the year of the car must be between 1950 and 2025");
+
+                        CarDto carDtoEdit = new CarDto(makeEdit, modelEdit, carDateTimeEdit);
+
+                        _showroomService.EditCar(carIndexEdit - 1, carDtoEdit);
+
+                        break;
+                    case 5:
+                        _showroomService.WriteAllCars();
+
+                        Console.Write("Choose the index of the car that you want to Edit: ");
+                        int carIndexDelete = _getValueService.GetIntInputValue();
+
+                        _showroomService.DeleteCar(carIndexDelete - 1);
+                        break;
                     case 6:
-                        flag = false;
+                        _showroomService.WriteAllCars();
+
+                        Console.Write("Choose the index of the car that you want to Sell: ");
+                        int carIndexSell = _getValueService.GetIntInputValue();
+                        
+                        
+                        Console.Write("Enter the date of the sale (dd-MM-yyyy)");
+                        string? saleDate = Console.ReadLine();
+                        if (!DateTime.TryParseExact(saleDate, "dd-MM-yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime saleDateTime))
+                            throw new Exception("Invalid date input");
+
+                        Console.Write("Enter the price of the car: ");
+                        double price = _getValueService.GetDoubleInputValue();
+                        
+                        SaleDto saleDto = new SaleDto(saleDateTime, price, carIndexSell - 1);
+                        
+                        _showroomService.SellCar(saleDto);
+                        
+                        break;
+                    case 7:
+                        WriteSortTypes();
+                        
+                        Console.Write("Choose the sorting type: ");
+                        int sortTypeIndex = _getValueService.GetIntInputValue();
+
+                        if(!ValidateService.ValidateSortTypeIndex(sortTypeIndex))
+                            throw new Exception("Invalid input");
+                        
+                        Console.Write("Enter count: ");
+                        int count = _getValueService.GetIntInputValue();
+                        
+                        _showroomService.SortSalesByDate(count, sortTypeIndex);
+                        
+                        break;
+                    case 8:
+                        Console.Write("Enter the model of the car: ");
+                        string findModelInput = _getValueService.GetStringInputValue();
+
+                        _showroomService.SortCarsByModel(findModelInput);
+                        break;
+                    case 9:
+                        _showroomService.WriteAllCars();
+
+                        break;
+                    case 10:
+                        running = false;
                         Console.WriteLine("Goodbye");
                         break;
                     default:
@@ -148,5 +233,13 @@ public class CarServiceAppUi
                 Console.WriteLine(e.Message);
             }
         }
+    }
+
+    private void WriteSortTypes()
+    {
+        Console.WriteLine("1 - Sort by Day");
+        Console.WriteLine("2 - Sort by Week");
+        Console.WriteLine("3 - Sort by Month");
+        Console.WriteLine("4 - Sort by Year");
     }
 }

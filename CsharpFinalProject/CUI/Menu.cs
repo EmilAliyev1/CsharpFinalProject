@@ -11,7 +11,7 @@ public class Menu
         {
             return _menuChoices[result - 1];
         }
-        return _menuChoices[_menuChoices.Count - 1];
+        throw new Exception("Invalid input");
     }
 
     private void WriteMenu()

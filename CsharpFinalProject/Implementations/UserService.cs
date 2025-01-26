@@ -7,7 +7,8 @@ namespace CsharpFinalProject.Implementations;
 
 public class UserService : IUserService
 {
-    private List<User> _users { get; set; } = new List<User>();
+    private List<User> _users = new List<User>();
+    public User CurrentUser { get; private set; } = new User();
 
     public UserService(){
         var json = File.ReadAllText("./Data/Users.json");
@@ -28,6 +29,7 @@ public class UserService : IUserService
             if (user.Username == loginDto.username && user.Password == loginDto.password)
             {
                 Console.WriteLine("User logged in successfully");
+                CurrentUser = user;
                 return user;
             }
         }
@@ -55,15 +57,10 @@ public class UserService : IUserService
         Console.WriteLine("User registered successfully");
     }
 
-    public Guid GetUserIdByIndex(int index){
-        return _users[index].Id;
-    }
-
     private User MapToUser(RegisterDto registerDto) { 
         return new User { 
             Username = registerDto.Username, 
-            Password = registerDto.Password,
-            ShowroomId = Guid.NewGuid(),
+            Password = registerDto.Password
         }; 
     }
 }

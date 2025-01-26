@@ -6,8 +6,8 @@ public interface IShowroomService
 {
     void CreateShowroom(ShowroomDto showroomDto);
     void CreateCar(CarDto carDto);
-    void EditCar(CarDto carDto, int carIndex);
+    void EditCar(int carIndex, CarDto carDto);
     void DeleteCar(int carIndex);
-    void SellCar(SaleDto saleDto, int userIndex);
+    void SellCar(SaleDto saleDto);
     void WriteAllShowrooms();
 }

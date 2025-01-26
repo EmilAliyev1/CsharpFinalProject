@@ -1,6 +1,8 @@
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using CsharpFinalProject.Data.DTO.Showroom;
 using CsharpFinalProject.Data.Model;
+using CsharpFinalProject.Enums;
 using CsharpFinalProject.Interfaces;
 
 namespace CsharpFinalProject.Implementations;
@@ -23,6 +25,8 @@ public class ShowroomService : IShowroomService
             throw new Exception("The inputed index is out of range, input valid index");
         
         CurrentShowroomIndex = index;
+
+        Console.WriteLine("Switched to the showroom successfuly");
     }
 
     public void CreateShowroom(ShowroomDto showroomDto){
@@ -57,10 +61,12 @@ public class ShowroomService : IShowroomService
         Console.WriteLine($"Car added to showroom with ID: [{_showrooms[CurrentShowroomIndex].Id}] successfuly");
     }
 
-    public void EditCar(CarDto carDto, int carIndex)
+    public void EditCar(int carIndex, CarDto carDto)
     {
         if (CurrentShowroomIndex == -1)
             throw new Exception("There is no showroom to edit the car in, create new showroom or switch to the existing one");
+        if (carIndex < 0 || carIndex >= _showrooms[CurrentShowroomIndex].Cars.Count)
+            throw new Exception("Invalid index");
 
         _showrooms[CurrentShowroomIndex].Cars[carIndex] = MapToCar(carDto);
 
@@ -73,6 +79,8 @@ public class ShowroomService : IShowroomService
     {
         if (CurrentShowroomIndex == -1)
             throw new Exception("There is no showroom to delete the car in, create new showroom or switch to the existing one");
+        if (carIndex < 0 || carIndex >= _showrooms[CurrentShowroomIndex].Cars.Count)
+            throw new Exception("Invalid index");
 
         _showrooms[CurrentShowroomIndex].Cars.RemoveAt(carIndex);
 
@@ -81,21 +89,84 @@ public class ShowroomService : IShowroomService
         Console.WriteLine($"Car deleted in showroom with ID: [{_showrooms[CurrentShowroomIndex].Id}] successfuly");
     }
 
-    public void SellCar(SaleDto saleDto, int userIndex){
-        Guid userId = _userService.GetUserIdByIndex(userIndex);
-
-        _showrooms[CurrentShowroomIndex].Sales.Add(MapToSale(saleDto, userId));
+    public void SellCar(SaleDto saleDto){
+        if (saleDto.carIndex < 0 || saleDto.carIndex >= _showrooms[CurrentShowroomIndex].Sales.Count)
+            throw new Exception("Invalid index");
+        
+        _showrooms[CurrentShowroomIndex].Sales.Add(MapToSale(saleDto));
 
         SaveShowroomsToFile();
 
         Console.WriteLine($"Car selled to showroom with ID: [{_showrooms[CurrentShowroomIndex].Id}] successfuly");
     }
 
-    private Showroom MapToShowroom(ShowroomDto showroomDto) { 
+    public void SortSalesByDate(int val, int sortTypeIndex)
+    {
+        if (CurrentShowroomIndex == -1)
+            throw new Exception("There is no showroom to sort the sales in, create new showroom or switch to the existing one");
+
+        List<Sale> sortedSales = [];
+        DateTime comparisonDate = new DateTime();
+        
+        switch ((SortType)sortTypeIndex)
+        {
+            case SortType.DAY:
+                comparisonDate = DateTime.Today.AddDays(-val);
+                break;
+            case SortType.WEEK:
+                comparisonDate = DateTime.Today.AddDays(-7 * val);
+                break;
+            case SortType.MONTH:
+                comparisonDate = DateTime.Today.AddMonths(-val);
+                break;
+            case SortType.YEAR:
+                comparisonDate = DateTime.Today.AddYears(-val);
+                break;
+        }
+        
+        for (int j = 0; j < _showrooms[CurrentShowroomIndex].Sales.Count; j++)
+        {
+            if (_showrooms[CurrentShowroomIndex].Sales[j].SaleDate > comparisonDate)
+            {
+                sortedSales.Add(_showrooms[CurrentShowroomIndex].Sales[j]);
+            }
+        }
+
+        Console.WriteLine("----------------------------------------------------------");
+
+        for (int i = 0; i < sortedSales.Count; i++)
+            Console.WriteLine($"{i + 1} - Price of the car: {sortedSales[i].Price} |\t| Date of the Sale: \"{sortedSales[i].SaleDate}\"");
+
+        Console.WriteLine("----------------------------------------------------------");
+    }
+
+    public void SortCarsByModel(string model){
+        if (CurrentShowroomIndex == -1)
+            throw new Exception("There is no showroom to sort cars in, create new showroom or switch to the existing one");
+
+        List<Car> sortedCars = [];
+        
+        foreach (var car in _showrooms[CurrentShowroomIndex].Cars)
+        {
+            if (car.Model.ToLower() == model.ToLower())
+                sortedCars.Add(car);
+        }
+
+        Console.WriteLine("----------------------------------------------------------");
+
+        for (int i = 0; i < sortedCars.Count; i++)
+            Console.WriteLine($"{i + 1} - The brand of the car: {sortedCars[i].Make} |\t| The model of the car: {sortedCars[i].Model} |\t| The date of the car: \"{sortedCars[i].Year}\"");
+        
+        Console.WriteLine("----------------------------------------------------------");
+    }
+
+    private Showroom MapToShowroom(ShowroomDto showroomDto) {
         return new Showroom { 
             Name = showroomDto.Name, 
             CarCapacity = showroomDto.CarCapacity,
-            Cars = []
+            Cars = [],
+            Sales = [],
+            UserId = _userService.CurrentUser.Id
         }; 
     }
 
@@ -107,12 +178,13 @@ public class ShowroomService : IShowroomService
         };
     }
 
-    private Sale MapToSale(SaleDto saleDto, Guid userId){
+    private Sale MapToSale(SaleDto saleDto){
         return new Sale {
             SaleDate = saleDto.SaleDate,
             Price = saleDto.price,
             ShowroomId = _showrooms[CurrentShowroomIndex].Id,
-            UserId = userId
+            UserId = _userService.CurrentUser.Id,
+            CarId = _showrooms[CurrentShowroomIndex].Cars[saleDto.carIndex].Id
         };
     }
 
@@ -126,11 +198,21 @@ public class ShowroomService : IShowroomService
         Console.WriteLine("----------------------------------------------------------");
         for (int i = 0; i < _showrooms.Count; i++)
         {
-            Console.WriteLine($"{i + 1} - {_showrooms[i].Name}\tId = [{_showrooms[i].Id}]");
+            Console.WriteLine($"{i + 1} - {_showrooms[i].Name} |\t| Id = [{_showrooms[i].Id}]");
 
         }
         Console.WriteLine("----------------------------------------------------------");
     }
 
-    // public void WriteAllCars
+    public void WriteAllCars()
+    {
+        if (CurrentShowroomIndex == -1)
+            throw new Exception("There is no showroom to show the statistics of the cars, create new showroom or switch to the existing one");
+        Console.WriteLine("----------------------------------------------------------");
+
+        for (int i = 0; i < _showrooms[CurrentShowroomIndex].Cars.Count; i++)
+            Console.WriteLine($"{i + 1} - Brand: {_showrooms[CurrentShowroomIndex].Cars[i].Make} |\t| Model: {_showrooms[CurrentShowroomIndex].Cars[i].Model} |\t| Year: \"{_showrooms[CurrentShowroomIndex].Cars[i].Year}\" |\t| Id = [{_showrooms[CurrentShowroomIndex].Cars[i].Id}]");
+
+        Console.WriteLine("----------------------------------------------------------");
+    }
 }

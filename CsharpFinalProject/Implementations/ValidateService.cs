@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using CsharpFinalProject.Data.DTO.User;
 using CsharpFinalProject.Data.DTO.Showroom;
+using CsharpFinalProject.Enums;
 
 namespace CsharpFinalProject.Implementations;
 
@@ -31,6 +32,11 @@ public static class ValidateService
     }
 
     public static bool ValidateCarDateTime(DateTime dateTime){
-        return dateTime.Year > 1950 && dateTime.Year < 2025;
+        return dateTime.Year > 1950 && dateTime.Year < DateTime.Now.Year;
+    }
+
+    public static bool ValidateSortTypeIndex(int sortTypeIndex)
+    {
+        return sortTypeIndex > 0 && sortTypeIndex <= (int)SortType.YEAR;
     }
 }
